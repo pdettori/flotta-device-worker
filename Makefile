@@ -3,6 +3,7 @@ RELEASE = 1
 DIST_DIR = $(shell pwd)/dist
 CGO_ENABLED = 0
 OS :=$(shell awk -F= '/^ID/{print $$2}' /etc/os-release)
+REMOTETAGS ?= remote exclude_graphdriver_btrfs btrfs_noversion exclude_graphdriver_devicemapper containers_image_openpgp
 
 DOCKER ?= podman
 
@@ -80,11 +81,11 @@ build-debug: build
 
 build: ## Build device worker
 	mkdir -p ./bin
-	CGO_ENABLED=$(CGO_ENABLED) go build $(BUILD_OPTIONS) -o ./bin ./cmd/device-worker
+	CGO_ENABLED=$(CGO_ENABLED) go build $(BUILD_OPTIONS) -tags "${REMOTETAGS}" -o ./bin ./cmd/device-worker
 
 build-arm64: ## Build device worker for arm64
 	mkdir -p ./bin
-	GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -o ./bin/device-worker-aarch64 ./cmd/device-worker
+	GOARCH=arm64 CGO_ENABLED=$(CGO_ENABLED) go build -tags "${REMOTETAGS}" -o ./bin/device-worker-aarch64 ./cmd/device-worker
 
 ##@ Deployment
 
